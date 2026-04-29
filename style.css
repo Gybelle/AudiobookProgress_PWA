@@ -1,0 +1,345 @@
+:root {
+  --bg: #12111a;
+  --bg2: #1c1a28;
+  --card: #222035;
+  --accent: #8b6cf7;
+  --accent-light: #b09fff;
+  --danger: #ff5252;
+  --text: #eceaf5;
+  --text2: #8880aa;
+  --border: #2e2a46;
+  --radius: 14px;
+  --radius-sm: 9px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  min-height: 100dvh;
+  padding-bottom: max(32px, env(safe-area-inset-bottom));
+}
+
+.app {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 16px 32px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 0 20px;
+}
+
+.header-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
+header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--text);
+}
+
+/* Section label */
+.section-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+}
+
+/* Card base */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+/* Progress section */
+.progress-section {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 28px 24px 20px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.progress-percentage {
+  font-size: 72px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 18px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -2px;
+  transition: all 0.3s ease;
+}
+
+.progress-percentage.complete {
+  background: linear-gradient(135deg, #4ade80, #22d3ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.progress-bar-container {
+  background: var(--bg2);
+  border-radius: 100px;
+  height: 10px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: 100px;
+  width: 0%;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-bar.complete {
+  background: linear-gradient(90deg, #4ade80, #22d3ee);
+}
+
+.progress-details {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+/* Toggle */
+.toggle-section {
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.toggle-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  background: var(--bg2);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+}
+
+.toggle-btn {
+  padding: 10px 8px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  background: transparent;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.toggle-btn.active {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 2px 8px rgba(139, 108, 247, 0.35);
+}
+
+/* Parts section */
+.parts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.parts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.add-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s, transform 0.1s;
+  box-shadow: 0 2px 8px rgba(139, 108, 247, 0.3);
+}
+
+.add-btn:active {
+  opacity: 0.85;
+  transform: scale(0.97);
+}
+
+/* Part card */
+#parts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.part-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 16px;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.part-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.part-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.remove-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 82, 82, 0.12);
+  color: var(--danger);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  font-family: inherit;
+  line-height: 1;
+}
+
+.remove-btn:active {
+  background: rgba(255, 82, 82, 0.28);
+}
+
+.part-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.part-row:last-child {
+  margin-bottom: 0;
+}
+
+.part-row label {
+  font-size: 14px;
+  color: var(--text2);
+  font-weight: 500;
+  min-width: 120px;
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.time-input {
+  width: 58px;
+  background: var(--bg2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+  padding: 9px 4px;
+  font-family: inherit;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  transition: border-color 0.15s;
+}
+
+.time-input::-webkit-outer-spin-button,
+.time-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.time-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: #1f1c30;
+}
+
+.time-sep {
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 600;
+}
+
+/* Part divider line */
+.part-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 12px 0;
+}
+
+/* Part summary bar */
+.part-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.part-mini-bar-container {
+  flex: 1;
+  height: 5px;
+  background: var(--bg2);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.part-mini-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: 100px;
+  transition: width 0.4s ease;
+}
+
+.part-pct {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-light);
+  min-width: 38px;
+  text-align: right;
+}

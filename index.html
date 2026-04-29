@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Audiobook Progress</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#8b6cf7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AudioProgress">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="header-icon">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 22 Q8 8 20 8 Q32 8 32 22" stroke="#8b6cf7" stroke-width="3" stroke-linecap="round"/>
+          <rect x="4" y="21" width="7" height="12" rx="3.5" fill="#8b6cf7"/>
+          <rect x="29" y="21" width="7" height="12" rx="3.5" fill="#8b6cf7"/>
+        </svg>
+      </div>
+      <h1>Audiobook Progress</h1>
+    </header>
+
+    <main>
+      <!-- Progress display at top -->
+      <div class="progress-section" id="progress-section">
+        <div class="progress-percentage" id="progress-pct">—</div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="progress-details" id="progress-details">Enter data below to calculate progress</div>
+      </div>
+
+      <!-- Input mode toggle -->
+      <div class="card toggle-section">
+        <span class="section-label">Second field shows</span>
+        <div class="toggle-container">
+          <button class="toggle-btn" id="btn-total" onclick="setMode('total')">Total duration</button>
+          <button class="toggle-btn" id="btn-remaining" onclick="setMode('remaining')">Remaining time</button>
+        </div>
+      </div>
+
+      <!-- Parts -->
+      <div class="parts-section">
+        <div class="parts-header">
+          <span class="section-label" style="margin-bottom:0">Parts</span>
+          <button class="add-btn" onclick="addPart()">+ Add Part</button>
+        </div>
+        <div id="parts-list"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js?v=2"></script>
+</body>
+</html>

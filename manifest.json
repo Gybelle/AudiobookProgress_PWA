@@ -1,0 +1,24 @@
+{
+  "name": "Audiobook Progress",
+  "short_name": "AudioProgress",
+  "description": "Track your audiobook progress across multiple parts",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#12111a",
+  "theme_color": "#8b6cf7",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
