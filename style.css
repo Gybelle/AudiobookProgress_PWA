@@ -37,7 +37,7 @@ header {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 28px 0 20px;
+  padding: 28px 0 16px;
 }
 
 .header-icon svg {
@@ -52,7 +52,146 @@ header h1 {
   color: var(--text);
 }
 
-/* Section label */
+/* ── Tabs ── */
+.tabs-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 -16px 14px;
+  padding: 0 16px;
+}
+
+.tabs-scroll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+  padding: 4px 0;
+}
+
+.tabs-scroll::-webkit-scrollbar { display: none; }
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.18s;
+  max-width: 160px;
+}
+
+.tab-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.tab-remove {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.2);
+  color: inherit;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: inherit;
+  padding: 0;
+  transition: background 0.15s;
+}
+
+.tab-remove:active { background: rgba(255,255,255,0.35); }
+
+.tab-add-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px dashed var(--border);
+  background: transparent;
+  color: var(--text2);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: inherit;
+  transition: all 0.18s;
+}
+
+.tab-add-btn:active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Book title ── */
+.book-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.book-title-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--border);
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 6px 0;
+  letter-spacing: -0.3px;
+  transition: border-color 0.15s;
+}
+
+.book-title-input::placeholder { color: var(--text2); font-weight: 500; }
+.book-title-input:focus { outline: none; border-color: var(--accent); }
+
+.delete-book-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: rgba(255, 82, 82, 0.1);
+  color: var(--danger);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.delete-book-btn:active { background: rgba(255, 82, 82, 0.25); }
+.delete-book-btn:disabled { opacity: 0.25; pointer-events: none; }
+
+/* ── Section label ── */
 .section-label {
   display: block;
   font-size: 11px;
@@ -63,14 +202,14 @@ header h1 {
   margin-bottom: 10px;
 }
 
-/* Card base */
+/* ── Card base ── */
 .card {
   background: var(--card);
   border-radius: var(--radius);
   border: 1px solid var(--border);
 }
 
-/* Progress section */
+/* ── Progress section ── */
 .progress-section {
   background: var(--card);
   border-radius: var(--radius);
@@ -125,7 +264,7 @@ header h1 {
   line-height: 1.5;
 }
 
-/* Toggle */
+/* ── Toggle ── */
 .toggle-section {
   padding: 14px 16px;
   margin-bottom: 14px;
@@ -159,11 +298,11 @@ header h1 {
   box-shadow: 0 2px 8px rgba(139, 108, 247, 0.35);
 }
 
-/* Parts section */
+/* ── Parts section ── */
 .parts-section {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 14px;
 }
 
 .parts-header {
@@ -187,12 +326,9 @@ header h1 {
   box-shadow: 0 2px 8px rgba(139, 108, 247, 0.3);
 }
 
-.add-btn:active {
-  opacity: 0.85;
-  transform: scale(0.97);
-}
+.add-btn:active { opacity: 0.85; transform: scale(0.97); }
 
-/* Part card */
+/* ── Part card ── */
 #parts-list {
   display: flex;
   flex-direction: column;
@@ -244,9 +380,7 @@ header h1 {
   line-height: 1;
 }
 
-.remove-btn:active {
-  background: rgba(255, 82, 82, 0.28);
-}
+.remove-btn:active { background: rgba(255, 82, 82, 0.28); }
 
 .part-row {
   display: flex;
@@ -255,9 +389,7 @@ header h1 {
   margin-bottom: 10px;
 }
 
-.part-row:last-child {
-  margin-bottom: 0;
-}
+.part-row:last-child { margin-bottom: 0; }
 
 .part-row label {
   font-size: 14px;
@@ -306,14 +438,7 @@ header h1 {
   font-weight: 600;
 }
 
-/* Part divider line */
-.part-divider {
-  height: 1px;
-  background: var(--border);
-  margin: 12px 0;
-}
-
-/* Part summary bar */
+/* ── Part mini progress bar ── */
 .part-summary {
   display: flex;
   align-items: center;

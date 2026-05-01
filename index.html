@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="AudioProgress">
   <link rel="apple-touch-icon" href="icon.svg">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
   <div class="app">
@@ -25,14 +25,33 @@
       <h1>Audiobook Progress</h1>
     </header>
 
+    <!-- Book tabs -->
+    <div class="tabs-wrapper">
+      <div class="tabs-scroll" id="tabs-scroll"></div>
+      <button class="tab-add-btn" onclick="addBook()" title="Add book">+</button>
+    </div>
+
     <main>
-      <!-- Progress display at top -->
-      <div class="progress-section" id="progress-section">
+      <!-- Book title -->
+      <div class="book-title-row">
+        <input class="book-title-input" id="book-title-input"
+          type="text" placeholder="Book title…"
+          oninput="updateBookTitle(this.value)"
+          onchange="updateBookTitle(this.value)">
+        <button class="delete-book-btn" id="delete-book-btn" onclick="removeBook()" title="Remove this book">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+            <path d="M4 5h12M8 5V3h4v2M7 5v10a1 1 0 001 1h4a1 1 0 001-1V5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Progress display -->
+      <div class="progress-section">
         <div class="progress-percentage" id="progress-pct">—</div>
         <div class="progress-bar-container">
           <div class="progress-bar" id="progress-bar"></div>
         </div>
-        <div class="progress-details" id="progress-details">Enter data below to calculate progress</div>
+        <div class="progress-details" id="progress-details">Enter duration data below to calculate progress</div>
       </div>
 
       <!-- Input mode toggle -->
@@ -55,6 +74,6 @@
     </main>
   </div>
 
-  <script src="app.js?v=2"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
