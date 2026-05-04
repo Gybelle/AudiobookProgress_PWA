@@ -266,7 +266,7 @@ header h1 {
 
 /* ── Toggle ── */
 .toggle-section {
-  padding: 14px 16px;
+  padding: 12px 14px;
   margin-bottom: 14px;
 }
 
@@ -277,6 +277,65 @@ header h1 {
   background: var(--bg2);
   border-radius: var(--radius-sm);
   padding: 4px;
+}
+
+.toggle-container.cols-2 { grid-template-columns: 1fr 1fr; }
+.toggle-container.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.settings-summary {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+}
+
+.settings-summary-type {
+  color: var(--accent-light);
+}
+
+.settings-chevron {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.settings-collapsed .toggle-container,
+.settings-collapsed .settings-row {
+  display: none;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.toggle-container.compact {
+  width: auto;
+  flex-shrink: 0;
+}
+
+.toggle-container.compact .toggle-btn {
+  padding: 7px 12px;
+  font-size: 12px;
+}
+
+.wide-input {
+  width: 80px;
 }
 
 .toggle-btn {

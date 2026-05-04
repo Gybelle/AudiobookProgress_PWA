@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE = 'audiobook-progress-v3';
+const CACHE = 'audiobook-progress-v4';
 const ASSETS = [
   '/',
   '/index.html',

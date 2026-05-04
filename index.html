@@ -54,18 +54,12 @@
         <div class="progress-details" id="progress-details">Enter duration data below to calculate progress</div>
       </div>
 
-      <!-- Input mode toggle -->
-      <div class="card toggle-section">
-        <span class="section-label">Second field shows</span>
-        <div class="toggle-container">
-          <button class="toggle-btn" id="btn-total" onclick="setMode('total')">Total duration</button>
-          <button class="toggle-btn" id="btn-remaining" onclick="setMode('remaining')">Remaining time</button>
-        </div>
-      </div>
+      <!-- Book settings (tracking type, pages, etc.) -->
+      <div id="book-settings-section"></div>
 
       <!-- Parts -->
       <div class="parts-section">
-        <div class="parts-header">
+        <div class="parts-header" id="parts-section-header">
           <span class="section-label" style="margin-bottom:0">Parts</span>
           <button class="add-btn" onclick="addPart()">+ Add Part</button>
         </div>

@@ -18,7 +18,17 @@ function createPart() {
 }
 
 function createBook(title = '') {
-  return { id: nextBookId++, title, mode: 'total', parts: [createPart()] };
+  return {
+    id: nextBookId++,
+    title,
+    trackingType: 'time',  // 'time' | 'percent' | 'pages'
+    mode: 'total',          // 'total' | 'remaining' (time mode only)
+    totalPages: 0,
+    currentPage: 0,         // pages mode
+    listenedPct: 0,         // percent mode (0–100)
+    settingsOpen: false,
+    parts: [createPart()]
+  };
 }
 
 function activeBook() {
@@ -35,15 +45,26 @@ function loadState() {
       state.activeBookId = saved.activeBookId || 1;
       state.books = (saved.books || []).map(b => {
         const parts = (b.parts || []).map(p => ({
-          id:       p.id || nextPartId++,
+          id:        p.id || nextPartId++,
           listenedH: clampH(p.listenedH ?? p.timeH),
           listenedM: clampM(p.listenedM ?? p.timeM),
-          totalH:   clampH(p.totalH),
-          totalM:   clampM(p.totalM),
-          remainH:  clampH(p.remainH),
-          remainM:  clampM(p.remainM)
+          totalH:    clampH(p.totalH),
+          totalM:    clampM(p.totalM),
+          remainH:   clampH(p.remainH),
+          remainM:   clampM(p.remainM)
         }));
-        return { id: b.id || nextBookId++, title: b.title || '', mode: b.mode === 'remaining' ? 'remaining' : 'total', parts };
+        const tt = ['time', 'percent', 'pages'].includes(b.trackingType) ? b.trackingType : 'time';
+        return {
+          id:           b.id || nextBookId++,
+          title:        b.title || '',
+          trackingType: tt,
+          mode:         b.mode === 'remaining' ? 'remaining' : 'total',
+          totalPages:   Math.max(0, parseInt(b.totalPages) || 0),
+          currentPage:  Math.max(0, parseInt(b.currentPage) || 0),
+          listenedPct:  Math.min(100, Math.max(0, parseFloat(b.listenedPct) || 0)),
+          settingsOpen: b.settingsOpen === true,
+          parts
+        };
       });
       if (state.books.length > 0) {
         nextBookId = Math.max(...state.books.map(b => b.id)) + 1;
@@ -63,7 +84,13 @@ function loadState() {
         totalH: clampH(p.totalH), totalM: clampM(p.totalM),
         remainH: clampH(p.remainH), remainM: clampM(p.remainM)
       }));
-      const book = { id: nextBookId++, title: '', mode: saved.mode === 'remaining' ? 'remaining' : 'total', parts: parts.length ? parts : [createPart()] };
+      const book = {
+        id: nextBookId++, title: '',
+        trackingType: 'time',
+        mode: saved.mode === 'remaining' ? 'remaining' : 'total',
+        totalPages: 0, currentPage: 0, listenedPct: 0,
+        parts: parts.length ? parts : [createPart()]
+      };
       state.books = [book];
       state.activeBookId = book.id;
     }
@@ -76,8 +103,10 @@ function saveState() {
 
 // ── Helpers ───────────────────────────────────────────────
 
-function clampH(v) { return Math.max(0, Math.min(999, parseInt(v) || 0)); }
-function clampM(v) { return Math.max(0, Math.min(59,  parseInt(v) || 0)); }
+function clampH(v)     { return Math.max(0, Math.min(999,   parseInt(v)   || 0)); }
+function clampM(v)     { return Math.max(0, Math.min(59,    parseInt(v)   || 0)); }
+function clampPages(v) { return Math.max(0, Math.min(99999, parseInt(v)   || 0)); }
+function clampPct(v)   { return Math.max(0, Math.min(100,   parseFloat(v) || 0)); }
 
 function partMinutes(part, mode) {
   const listened = part.listenedH * 60 + part.listenedM;
@@ -98,7 +127,6 @@ function addBook() {
   state.activeBookId = book.id;
   saveState();
   renderAll();
-  // focus title input
   setTimeout(() => document.getElementById('book-title-input')?.focus(), 50);
 }
 
@@ -124,15 +152,58 @@ function updateBookTitle(value) {
   renderTabs();
 }
 
-// ── Mode ──────────────────────────────────────────────────
+// ── Tracking type & mode ──────────────────────────────────
+
+function toggleSettings() {
+  const book = activeBook();
+  if (!book) return;
+  book.settingsOpen = !book.settingsOpen;
+  saveState();
+  renderBookSettings();
+}
+
+function setTrackingType(type) {
+  const book = activeBook();
+  if (!book) return;
+  book.trackingType = type;
+  saveState();
+  renderBookSettings();
+  renderParts();
+  updateProgress();
+}
 
 function setMode(mode) {
   const book = activeBook();
   if (!book) return;
   book.mode = mode;
   saveState();
-  renderModeButtons();
+  renderBookSettings();
   renderParts();
+  updateProgress();
+}
+
+function updateTotalPages(value) {
+  const book = activeBook();
+  if (!book) return;
+  book.totalPages = clampPages(value);
+  saveState();
+  updateProgress();
+  renderParts();
+}
+
+function updateCurrentPage(value) {
+  const book = activeBook();
+  if (!book) return;
+  book.currentPage = clampPages(value);
+  saveState();
+  updateProgress();
+}
+
+function updateListenedPct(value) {
+  const book = activeBook();
+  if (!book) return;
+  book.listenedPct = clampPct(value);
+  saveState();
   updateProgress();
 }
 
@@ -177,9 +248,52 @@ function updateProgress() {
   const pctEl     = document.getElementById('progress-pct');
   const barEl     = document.getElementById('progress-bar');
   const detailsEl = document.getElementById('progress-details');
-
   if (!book) return;
 
+  const tt = book.trackingType || 'time';
+
+  if (tt === 'percent') {
+    const pct = book.listenedPct || 0;
+    const isComplete = pct >= 100;
+    pctEl.textContent = pct.toFixed(1) + '%';
+    pctEl.classList.toggle('complete', isComplete);
+    barEl.style.width = pct + '%';
+    barEl.classList.toggle('complete', isComplete);
+    if (pct === 0) {
+      detailsEl.textContent = 'Enter your progress below';
+    } else if (isComplete) {
+      detailsEl.textContent = 'Finished!';
+    } else {
+      const pageHint = book.totalPages > 0
+        ? ` · approx. page ${Math.round(pct / 100 * book.totalPages)} of ${book.totalPages}`
+        : '';
+      detailsEl.textContent = `${pct.toFixed(1)}% read${pageHint}`;
+    }
+    return;
+  }
+
+  if (tt === 'pages') {
+    if (book.totalPages === 0) {
+      pctEl.textContent = '—';
+      pctEl.classList.remove('complete');
+      barEl.style.width = '0%';
+      barEl.classList.remove('complete');
+      detailsEl.textContent = 'Set the total number of pages below';
+      return;
+    }
+    const pct = Math.min(100, (book.currentPage / book.totalPages) * 100);
+    const isComplete = book.currentPage >= book.totalPages;
+    pctEl.textContent = pct.toFixed(1) + '%';
+    pctEl.classList.toggle('complete', isComplete);
+    barEl.style.width = pct + '%';
+    barEl.classList.toggle('complete', isComplete);
+    detailsEl.textContent = isComplete
+      ? `Finished! ${book.totalPages} pages`
+      : `Page ${book.currentPage} of ${book.totalPages}`;
+    return;
+  }
+
+  // time mode
   let grandTotal = 0, grandListened = 0;
   for (const part of book.parts) {
     const { listened, total } = partMinutes(part, book.mode);
@@ -209,9 +323,13 @@ function updateProgress() {
   const rem = grandTotal - grandListened;
   const rH = Math.floor(rem / 60), rM = rem % 60;
 
+  const pageHint = book.totalPages > 0
+    ? ` · approx. page ${Math.round(pct / 100 * book.totalPages)} of ${book.totalPages}`
+    : '';
+
   detailsEl.textContent = isComplete
     ? `Finished! ${tH}h ${tM}m total`
-    : `${lH}h ${lM}m listened · ${rH}h ${rM}m remaining · ${tH}h ${tM}m total`;
+    : `${lH}h ${lM}m listened · ${rH}h ${rM}m remaining · ${tH}h ${tM}m total${pageHint}`;
 }
 
 function updatePartMiniBar(id) {
@@ -242,7 +360,6 @@ function renderTabs() {
       </button>`;
   }).join('');
 
-  // scroll active tab into view
   const activeTab = scroll.querySelector('.tab.active');
   if (activeTab) activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
 }
@@ -255,17 +372,108 @@ function renderBookTitle() {
   if (delBtn) delBtn.disabled = state.books.length <= 1;
 }
 
-function renderModeButtons() {
+function renderBookSettings() {
   const book = activeBook();
-  const mode = book ? book.mode : 'total';
-  document.getElementById('btn-total').classList.toggle('active', mode === 'total');
-  document.getElementById('btn-remaining').classList.toggle('active', mode === 'remaining');
+  const container = document.getElementById('book-settings-section');
+  if (!book || !container) return;
+
+  const tt = book.trackingType || 'time';
+  const open = book.settingsOpen;
+
+  const ttLabel = tt === 'time' ? 'Time' : tt === 'percent' ? 'Percent' : 'Pages';
+  const summaryExtra = book.totalPages > 0 ? ` · ${book.totalPages} p.` : '';
+  const chevron = open ? '▴' : '▾';
+
+  const timeSubHTML = tt === 'time' ? `
+    <div class="settings-row">
+      <span class="section-label" style="margin-bottom:0">Second field</span>
+      <div class="toggle-container cols-2 compact">
+        <button class="toggle-btn ${book.mode === 'total' ? 'active' : ''}" onclick="setMode('total')">Total</button>
+        <button class="toggle-btn ${book.mode === 'remaining' ? 'active' : ''}" onclick="setMode('remaining')">Remaining</button>
+      </div>
+    </div>` : '';
+
+  const pagesFieldHTML = `
+    <div class="settings-row">
+      <span class="section-label" style="margin-bottom:0">Total pages</span>
+      <div class="time-inputs">
+        <input type="number" class="time-input wide-input" inputmode="numeric" min="0" max="99999"
+          placeholder="0" value="${book.totalPages > 0 ? book.totalPages : ''}"
+          onfocus="this.select()"
+          oninput="updateTotalPages(this.value)"
+          onchange="updateTotalPages(this.value)">
+        <span class="time-sep">p.</span>
+      </div>
+    </div>`;
+
+  const bodyHTML = open ? `
+      <div class="toggle-container cols-3">
+        <button class="toggle-btn ${tt === 'time' ? 'active' : ''}" onclick="setTrackingType('time')">Time</button>
+        <button class="toggle-btn ${tt === 'percent' ? 'active' : ''}" onclick="setTrackingType('percent')">Percent</button>
+        <button class="toggle-btn ${tt === 'pages' ? 'active' : ''}" onclick="setTrackingType('pages')">Pages</button>
+      </div>
+      ${timeSubHTML}
+      ${pagesFieldHTML}` : '';
+
+  container.innerHTML = `
+    <div class="card toggle-section settings-card ${open ? '' : 'settings-collapsed'}">
+      <button class="settings-header" onclick="toggleSettings()">
+        <span class="settings-summary"><span class="settings-summary-type">${ttLabel}</span>${escHtml(summaryExtra)}</span>
+        <span class="settings-chevron">${chevron}</span>
+      </button>
+      ${bodyHTML}
+    </div>`;
 }
 
 function renderParts() {
   const book = activeBook();
   const container = document.getElementById('parts-list');
+  const partsHeader = document.getElementById('parts-section-header');
   if (!book) { container.innerHTML = ''; return; }
+
+  const tt = book.trackingType || 'time';
+
+  if (tt === 'percent') {
+    if (partsHeader) partsHeader.style.display = 'none';
+    container.innerHTML = `
+      <div class="part-card">
+        <div class="part-row">
+          <label>Progress</label>
+          <div class="time-inputs">
+            <input type="number" class="time-input wide-input" inputmode="decimal" min="0" max="100" step="0.1"
+              placeholder="0" value="${book.listenedPct > 0 ? book.listenedPct : ''}"
+              onfocus="this.select()"
+              oninput="updateListenedPct(this.value)"
+              onchange="updateListenedPct(this.value)">
+            <span class="time-sep">%</span>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  if (tt === 'pages') {
+    if (partsHeader) partsHeader.style.display = 'none';
+    const ofLabel = book.totalPages > 0 ? `<span class="time-sep">of ${book.totalPages} p.</span>` : '';
+    container.innerHTML = `
+      <div class="part-card">
+        <div class="part-row">
+          <label>Current page</label>
+          <div class="time-inputs">
+            <input type="number" class="time-input wide-input" inputmode="numeric" min="0" max="99999"
+              placeholder="0" value="${book.currentPage > 0 ? book.currentPage : ''}"
+              onfocus="this.select()"
+              oninput="updateCurrentPage(this.value)"
+              onchange="updateCurrentPage(this.value)">
+            ${ofLabel}
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // time mode
+  if (partsHeader) partsHeader.style.display = '';
 
   const secondLabel = book.mode === 'total' ? 'Total duration' : 'Remaining';
   const showRemove  = book.parts.length > 1;
@@ -328,7 +536,7 @@ function renderParts() {
 function renderAll() {
   renderTabs();
   renderBookTitle();
-  renderModeButtons();
+  renderBookSettings();
   renderParts();
   updateProgress();
 }
